@@ -1,0 +1,21 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "16.18.0",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.4.1"
+    },
+    "version": "1.16.0",
+    "libraryName": "graph-ideas",
+    "libraryId": "7e54a9da-894c-4e64-b136-b90c9d1740a1",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "graph-ideas",
+    "solutionShortDescription": "graph-ideas description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

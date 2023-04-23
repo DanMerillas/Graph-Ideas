@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "today-work-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/todayWork/TodayWorkWebPart.js",
+          "manifest": "./src/webparts/todayWork/TodayWorkWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "TodayWorkWebPartStrings": "lib/webparts/todayWork/loc/{locale}.js"
+  }
+}
