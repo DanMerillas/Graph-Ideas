@@ -13,11 +13,14 @@
     "serve": "gulp bundle --custom-serve --max_old_space_size=4096 && fast-serve"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.8",
+    "@emotion/styled": "^11.10.8",
     "@microsoft/sp-core-library": "1.16.0",
     "@microsoft/sp-lodash-subset": "1.16.0",
     "@microsoft/sp-office-ui-fabric-core": "1.16.0",
     "@microsoft/sp-property-pane": "1.16.0",
     "@microsoft/sp-webpart-base": "1.16.0",
+    "@mui/material": "^5.12.2",
     "@pnp/core": "^3.14.0",
     "@pnp/graph": "^3.14.0",
     "@pnp/logging": "^3.14.0",
