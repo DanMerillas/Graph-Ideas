@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as React from 'react';
@@ -14,11 +15,18 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { TabPanel } from './TabComponent';
-import EventCard from './Event';
+import EventCard from './Cards/EventCard';
+import Carousel from 'react-material-ui-carousel'
+import CircularProgress from '@mui/material/CircularProgress';
+import TaskCard from './Cards/TaskCard';
+import FileCard from './Cards/FileCard';
 
 interface TodayWorkState {
   value: number;
   events: any;
+  tasks: any;
+  files: any;
+  loadingEvents: boolean;
 }
 
 export default class TodayWork extends React.Component<ITodayWorkProps, TodayWorkState> {
@@ -28,28 +36,55 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
 
     this.state = {
       value: 0,
-      events: []
+      events: [],
+      tasks: [],
+      files: [],
+      loadingEvents: true
     };
   }
 
   public async componentDidMount(): Promise<void> {
-    const graph = graphfi().using(SPFx(this.props.context));
 
-    const tasks = (await graph.me.tasks())
-    const events = await graph.me.events();
-    const view4 = await graph.me.calendarView("2023-04-20", "2023-04-21")();
-    const files = await graph.me.drive.recent()
-    const trending = await graph.me.insights.trending()
-    const used = await graph.me.insights.used()
-this.setState({
-      events: view4
+    const today = new Date()
+    const graph = graphfi().using(SPFx(this.props.context));
+    graph.me.calendarView(today.toLocaleDateString("en-US"), new Date(today.setDate(today.getDate() + 1)).toLocaleDateString("en-US"))().then((events) => {
+
+      this.setState({
+        events: events,
+        loadingEvents: false
+      })
     })
-    console.log(tasks)
-    console.log(events)
-    console.log(view4)
-    console.log(files)
-    console.log(trending)
-    console.log(used)
+
+    graph.me.tasks().then((tasks: any) => {
+      this.setState({
+        tasks: tasks,
+      })
+    })
+
+    graph.me.drive.recent().then((files: any) => {
+      this.setState({
+        files: files.filter((f: any) =>f.file.mimeType !== "application/msonenote")
+      })
+    })
+
+    // graph.planner.plans().then((plans:any)=>{
+    //   graph.me.tasks().then((tasks:any)=>{
+    //     console.log(plans)
+    //     console.log(tasks)
+    //   })
+    // }
+    // )
+
+    //const events = await graph.me.events();
+
+    //const files = await graph.me.drive.recent()
+    //  const trending = await graph.me.insights.trending()
+    //  const used = await graph.me.insights.used()
+
+    // console.log(tasks)
+    // console.log(files)
+    // console.log(trending)
+    // console.log(used)
   }
 
   public a11yProps(index: number) {
@@ -87,16 +122,34 @@ this.setState({
         </Box>
         <TabPanel value={this.state.value} index={0}>
           {
-            this.state.events && this.state.events.map((event:any) => {
-              return <EventCard key={event.id} evento={event}/>
+            this.state.loadingEvents ?
+              <span className={styles.loading}><CircularProgress /></span>
+              :
+              <Carousel animation="slide" autoPlay={false}>
+                {
+                  this.state.events && this.state.events.map((event: any) => {
+                    return <EventCard key={event.id} evento={event} />
+                  })
+                }
+              </Carousel>
+          }
+
+        </TabPanel>
+        <TabPanel value={this.state.value} index={1}>
+          {
+
+            this.state.tasks && this.state.tasks.map((task: any) => {
+              if (task.percentComplete !== 100)
+                return <TaskCard key={task.bucketId} tarea={task} />
             })
           }
         </TabPanel>
-        <TabPanel value={this.state.value} index={1}>
-          Item Two
-        </TabPanel>
         <TabPanel value={this.state.value} index={2}>
-          Item Three
+          {
+            this.state.files && this.state.files.map((file: any) => {
+              return <FileCard key={file.id} file={file}/>
+            })
+          }
         </TabPanel>
       </section>
     );

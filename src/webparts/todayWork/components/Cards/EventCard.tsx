@@ -6,6 +6,7 @@ import Card from '@mui/material/Card';
 
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
+import { date_TO_String } from '../../Utils/Utils';
 
 export default function EventCard(props: { evento: any }) {
     return (
@@ -15,11 +16,16 @@ export default function EventCard(props: { evento: any }) {
                     {props.evento.subject}
                 </Typography>
                 <Typography sx={{ mb: 1.5, mt: 1.5 }} color="text.secondary">
-                    {props.evento.start.dateTime}
+                    {props.evento.start && date_TO_String(new Date(props.evento.start.dateTime))}
                 </Typography>
-                <Typography variant="body2"  sx={{ mb: 1.5, fontWeight:'Bold'}}>
-                    <a href={props.evento.onlineMeeting.joinUrl} target='_blank' rel="noreferrer" >Conectar Reunión</a>
-                </Typography>
+                {
+                    props.evento.onlineMeeting &&
+
+                    <Typography variant="body2" sx={{ mb: 1.5, fontWeight: 'Bold' }}>
+                        <a href={props.evento.onlineMeeting.joinUrl} target='_blank' rel="noreferrer" >Unirse a la Reunión</a>
+                    </Typography>
+                }
+
                 <Typography variant="body2">
                     <div dangerouslySetInnerHTML={{ __html: props.evento.bodyPreview }} />
 
