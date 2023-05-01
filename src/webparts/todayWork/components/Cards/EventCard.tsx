@@ -10,13 +10,13 @@ import { date_TO_String } from '../../Utils/Utils';
 
 export default function EventCard(props: { evento: any }) {
     return (
-        <Card sx={{ minWidth: 275 }}>
+        <Card sx={{ minWidth: 275, minHeight:275 }}>
             <CardContent>
                 <Typography variant="h5" component="div">
                     {props.evento.subject}
                 </Typography>
-                <Typography sx={{ mb: 1.5, mt: 1.5 }} color="text.secondary">
-                    {props.evento.start && date_TO_String(new Date(props.evento.start.dateTime))}
+                <Typography sx={{ mb: 1.5, mt: 1.5, fontSize:'15px' }} color="text.secondary">
+                    {props.evento.start && date_TO_String(new Date(props.evento.start.dateTime + 'Z'))} a {props.evento.end && date_TO_String(new Date(props.evento.end.dateTime + 'Z'))}
                 </Typography>
                 {
                     props.evento.onlineMeeting &&

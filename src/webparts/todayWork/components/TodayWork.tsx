@@ -20,12 +20,15 @@ import Carousel from 'react-material-ui-carousel'
 import CircularProgress from '@mui/material/CircularProgress';
 import TaskCard from './Cards/TaskCard';
 import FileCard from './Cards/FileCard';
+import { Button } from '@mui/material';
 
 interface TodayWorkState {
   value: number;
   events: any;
   tasks: any;
   files: any;
+  filesPaged: any;
+  currentTask:string;
   loadingEvents: boolean;
 }
 
@@ -39,6 +42,8 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
       events: [],
       tasks: [],
       files: [],
+      filesPaged: [],
+      currentTask:'',
       loadingEvents: true
     };
   }
@@ -47,44 +52,61 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
 
     const today = new Date()
     const graph = graphfi().using(SPFx(this.props.context));
-    graph.me.calendarView(today.toLocaleDateString("en-US"), new Date(today.setDate(today.getDate() + 1)).toLocaleDateString("en-US"))().then((events) => {
+
+    this.obtenerTareas(graph);
+
+    this.ObtenerEventos(graph, today);
+
+    this.obtenerDocumentos(graph);
+
+
+  }
+
+  private obtenerDocumentos(graph: any) {
+    graph.me.drive.recent().then((files: any) => {
+
+      const filesPaged = []
+      const filterFiles = files.filter((f: any) => f.file.mimeType !== "application/msonenote")
+
+      for (let i = 0; i < 5; i++)
+        filesPaged.push(filterFiles[i])
+
+      this.setState({
+        files: filterFiles,
+        filesPaged: filesPaged
+      });
+    });
+  }
+
+  private ObtenerEventos(graph: any, today: Date) {
+    graph.me.calendarView(today.toLocaleDateString("en-US"), new Date(today.setDate(today.getDate() + 1)).toLocaleDateString("en-US"))().then((events: any) => {
 
       this.setState({
         events: events,
-        loadingEvents: false
-      })
-    })
+      });
+    });
+  }
 
+  private obtenerTareas(graph: any) {
     graph.me.tasks().then((tasks: any) => {
       this.setState({
-        tasks: tasks,
-      })
-    })
+        tasks: tasks.filter((task: any) => task.percentComplete !== 100).sort(function(o:any){ return new Date( o.createdDateTime ) }),
+        loadingEvents: false
+      });
+    });
+  }
 
-    graph.me.drive.recent().then((files: any) => {
+  private verMas() {
+    const filesPaged = [...this.state.filesPaged]
+
+    
+
+    for (let i = this.state.filesPaged.length; i < (this.state.filesPaged.length + 5); i++)
+      filesPaged.push(this.state.files[i])
+
       this.setState({
-        files: files.filter((f: any) =>f.file.mimeType !== "application/msonenote")
+        filesPaged:filesPaged
       })
-    })
-
-    // graph.planner.plans().then((plans:any)=>{
-    //   graph.me.tasks().then((tasks:any)=>{
-    //     console.log(plans)
-    //     console.log(tasks)
-    //   })
-    // }
-    // )
-
-    //const events = await graph.me.events();
-
-    //const files = await graph.me.drive.recent()
-    //  const trending = await graph.me.insights.trending()
-    //  const used = await graph.me.insights.used()
-
-    // console.log(tasks)
-    // console.log(files)
-    // console.log(trending)
-    // console.log(used)
   }
 
   public a11yProps(index: number) {
@@ -115,11 +137,13 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
         </div>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={this.state.value} onChange={this.handleChange.bind(this)} aria-label="basic tabs example">
-            <Tab label="Reuniones" {...this.a11yProps(0)} />
-            <Tab label="Tareas" {...this.a11yProps(1)} />
-            <Tab label="Ficheros" {...this.a11yProps(2)} />
+
+            <Tab className={styles.labels} label="Tareas" {...this.a11yProps(0)} />
+            <Tab className={styles.labels} label="Reuniones" {...this.a11yProps(1)} />
+            <Tab className={styles.labels} label="Ficheros" {...this.a11yProps(2)} />
           </Tabs>
         </Box>
+
         <TabPanel value={this.state.value} index={0}>
           {
             this.state.loadingEvents ?
@@ -127,29 +151,35 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
               :
               <Carousel animation="slide" autoPlay={false}>
                 {
-                  this.state.events && this.state.events.map((event: any) => {
-                    return <EventCard key={event.id} evento={event} />
+                  this.state.tasks && this.state.tasks.map((task: any) => {
+                    return <TaskCard key={task.bucketId} tarea={task}/>
                   })
                 }
               </Carousel>
-          }
 
+          }
         </TabPanel>
+
         <TabPanel value={this.state.value} index={1}>
           {
-
-            this.state.tasks && this.state.tasks.map((task: any) => {
-              if (task.percentComplete !== 100)
-                return <TaskCard key={task.bucketId} tarea={task} />
-            })
+            <Carousel animation="slide" autoPlay={false}>
+              {
+                this.state.events && this.state.events.map((event: any) => {
+                  return <EventCard key={event.id} evento={event} />
+                })
+              }
+            </Carousel>
           }
+
         </TabPanel>
         <TabPanel value={this.state.value} index={2}>
           {
-            this.state.files && this.state.files.map((file: any) => {
-              return <FileCard key={file.id} file={file}/>
+
+            this.state.filesPaged && this.state.filesPaged.map((file: any) => {
+              return <FileCard key={file.id} file={file} />
             })
           }
+          <Button variant="contained" onClick={this.verMas.bind(this)}>Ver más</Button>
         </TabPanel>
       </section>
     );

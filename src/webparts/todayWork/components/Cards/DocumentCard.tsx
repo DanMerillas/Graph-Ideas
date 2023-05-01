@@ -16,10 +16,10 @@ export default function DocumentCard(props: { documento: any }) {
                     {props.documento.title}
                 </Typography>
                 <Typography variant="body2">
-                    Fecha Inicio: {props.documento.startDateTime && date_TO_String(new Date(props.documento.startDateTime))} 
+                    Fecha Inicio: {props.documento.startDateTime && date_TO_String(new Date(props.documento.startDateTime + 'Z'))} 
                 </Typography>
                 <Typography variant="body2">
-                    Fecha Fin: {props.documento.completedDateTime && date_TO_String(new Date(props.documento.completedDateTime))}
+                    Fecha Fin: {props.documento.completedDateTime && date_TO_String(new Date(props.documento.completedDateTime + 'Z'))}
                 </Typography>
                 <Typography variant="body2"  sx={{ mb: 1.5}}>
                     Porcentaje completado: {props.documento.percentComplete}

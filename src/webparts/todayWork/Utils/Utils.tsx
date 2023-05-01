@@ -6,10 +6,16 @@ moment.locale('es')
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 export function date_TO_String(date_Object:Date) {
+//     date_Object.toISOString()
+//     const date = moment(date_Object).utc().format('YYYY-MM-DD HH:mm:ss');
 
-    const resultDateAux = moment(date_Object)
+
+
+// const stillUtc = moment.utc(date).toDate();
+// const local = moment(stillUtc).local().format('YYYY-MM-DD HH:mm:ss');
+    // const resultDateAux = moment(date_Object)
     
-    resultDateAux.locale(false);
+    // resultDateAux.locale(false);
     // get the year, month, date, hours, and minutes seprately and append to the string.
     // const date_String = date_Object.getDate() +
     //    "/" +
@@ -21,5 +27,5 @@ export function date_TO_String(date_Object:Date) {
     //    ":" +
     //    +date_Object.getMinutes();
 
-    return resultDateAux.utc(false).format('LLLL')
+    return moment(date_Object).format('DD/MM/YYYY HH:mm');
  }
