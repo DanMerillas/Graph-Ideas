@@ -149,37 +149,54 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
             this.state.loadingEvents ?
               <span className={styles.loading}><CircularProgress /></span>
               :
+              this.state.tasks && this.state.tasks.length > 0 ?
               <Carousel animation="slide" autoPlay={false}>
                 {
+                  
                   this.state.tasks && this.state.tasks.map((task: any) => {
                     return <TaskCard key={task.bucketId} tarea={task}/>
                   })
+                 
                 }
               </Carousel>
-
+ :
+                  <p>No hay tareas</p>
           }
         </TabPanel>
 
         <TabPanel value={this.state.value} index={1}>
+              
           {
+                this.state.events && this.state.events.length > 0 ?
             <Carousel animation="slide" autoPlay={false}>
-              {
-                this.state.events && this.state.events.map((event: any) => {
+          
+                {this.state.events && this.state.events.map((event: any) => {
                   return <EventCard key={event.id} evento={event} />
-                })
-              }
+                })}
+                
+              
             </Carousel>
+            :
+                <p>No hay eventos</p>
           }
+          
 
         </TabPanel>
         <TabPanel value={this.state.value} index={2}>
+        
           {
 
             this.state.filesPaged && this.state.filesPaged.map((file: any) => {
               return <FileCard key={file.id} file={file} />
             })
           }
-          <Button variant="contained" onClick={this.verMas.bind(this)}>Ver más</Button>
+          {
+             this.state.filesPaged &&  this.state.filesPaged.length > 0 ?
+            <Button variant="contained" onClick={this.verMas.bind(this)}>Ver más</Button>
+            :
+            <p>No hay documentos en este momento</p>
+          }
+          
         </TabPanel>
       </section>
     );
