@@ -4,7 +4,6 @@
 import * as React from 'react';
 import styles from './TodayWork.module.scss';
 import { ITodayWorkProps } from './ITodayWorkProps';
-import { escape } from '@microsoft/sp-lodash-subset';
 import { SPFx, graphfi } from "@pnp/graph";
 import "@pnp/graph/planner";
 import "@pnp/graph/users";
@@ -33,6 +32,8 @@ interface TodayWorkState {
 }
 
 export default class TodayWork extends React.Component<ITodayWorkProps, TodayWorkState> {
+
+  public locale:string = "en-US"
 
   constructor(props: ITodayWorkProps) {
     super(props);
@@ -66,20 +67,20 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
     graph.me.drive.recent().then((files: any) => {
 
       const filesPaged = []
-      const filterFiles = files.filter((f: any) => f.file.mimeType !== "application/msonenote")
+      //const filterFiles = files.filter((f: any) => f.file && f.file.mimeType !== "application/msonenote")
 
       for (let i = 0; i < 5; i++)
-        filesPaged.push(filterFiles[i])
+        filesPaged.push(files[i])
 
       this.setState({
-        files: filterFiles,
+        files: files,
         filesPaged: filesPaged
       });
     });
   }
 
   private ObtenerEventos(graph: any, today: Date) {
-    graph.me.calendarView(today.toLocaleDateString("en-US"), new Date(today.setDate(today.getDate() + 1)).toLocaleDateString("en-US"))().then((events: any) => {
+    graph.me.calendarView(today.toLocaleDateString(this.locale), new Date(today.setDate(today.getDate() + 1)).toLocaleDateString(this.locale))().then((events: any) => {
 
       this.setState({
         events: events,
@@ -98,8 +99,6 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
 
   private verMas() {
     const filesPaged = [...this.state.filesPaged]
-
-    
 
     for (let i = this.state.filesPaged.length; i < (this.state.filesPaged.length + 5); i++)
       filesPaged.push(this.state.files[i])
@@ -123,18 +122,11 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
   }
 
   public render(): React.ReactElement<ITodayWorkProps> {
-    const {
-      userDisplayName
-
-    } = this.props;
-
-
+    
 
     return (
       <section className={styles.todayWork}>
-        <div>
-          <h2>Hola, {escape(userDisplayName)}!</h2>
-        </div>
+       
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={this.state.value} onChange={this.handleChange.bind(this)} aria-label="basic tabs example">
 
