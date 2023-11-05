@@ -13,7 +13,7 @@ export default function FileCard(props: { file: any }) {
         <Card sx={{ minWidth: 275, marginBottom:1.5 }}>
             <CardContent>
                 <Typography sx={{wordWrap:'break-word'}} component="div">
-                    <a href='#' onClick={() => window.open(props.file.webUrl)}>{props.file.remoteItem.name} ({((props.file.remoteItem.size / 1024) / 1024).toFixed(2)} MB)</a>
+                    <a href='#' onClick={() => window.open(props.file.webUrl)}>{props.file.remoteItem.name} </a>({((props.file.remoteItem.size / 1024) / 1024).toFixed(2)} MB)
                 </Typography>
             </CardContent>
 

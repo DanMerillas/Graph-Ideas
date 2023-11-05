@@ -27,13 +27,13 @@ interface TodayWorkState {
   tasks: any;
   files: any;
   filesPaged: any;
-  currentTask:string;
+  currentTask: string;
   loadingEvents: boolean;
 }
 
 export default class TodayWork extends React.Component<ITodayWorkProps, TodayWorkState> {
 
-  public locale:string = "en-US"
+  public locale: string = "en-US"
 
   constructor(props: ITodayWorkProps) {
     super(props);
@@ -44,21 +44,27 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
       tasks: [],
       files: [],
       filesPaged: [],
-      currentTask:'',
+      currentTask: '',
       loadingEvents: true
     };
   }
 
   public async componentDidMount(): Promise<void> {
 
-    const today = new Date()
-    const graph = graphfi().using(SPFx(this.props.context));
+    try {
+      const today = new Date()
+      const graph = graphfi().using(SPFx(this.props.context));
 
-    this.obtenerTareas(graph);
+      this.obtenerTareas(graph);
 
-    this.ObtenerEventos(graph, today);
+      this.ObtenerEventos(graph, today);
 
-    this.obtenerDocumentos(graph);
+      this.obtenerDocumentos(graph);
+    }
+    catch (error) {
+      console.log(error)
+    }
+
 
 
   }
@@ -80,8 +86,11 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
   }
 
   private ObtenerEventos(graph: any, today: Date) {
+    graph.me().then((me: any) => {
+      console.log(me)
+    })
     graph.me.calendarView(today.toLocaleDateString(this.locale), new Date(today.setDate(today.getDate() + 1)).toLocaleDateString(this.locale))().then((events: any) => {
-
+      
       this.setState({
         events: events,
       });
@@ -91,7 +100,7 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
   private obtenerTareas(graph: any) {
     graph.me.tasks().then((tasks: any) => {
       this.setState({
-        tasks: tasks.filter((task: any) => task.percentComplete !== 100).sort(function(o:any){ return new Date( o.createdDateTime ) }),
+        tasks: tasks.filter((task: any) => task.percentComplete !== 100).sort(function (o: any) { return new Date(o.createdDateTime) }),
         loadingEvents: false
       });
     });
@@ -103,9 +112,9 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
     for (let i = this.state.filesPaged.length; i < (this.state.filesPaged.length + 5); i++)
       filesPaged.push(this.state.files[i])
 
-      this.setState({
-        filesPaged:filesPaged
-      })
+    this.setState({
+      filesPaged: filesPaged
+    })
   }
 
   public a11yProps(index: number) {
@@ -122,11 +131,11 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
   }
 
   public render(): React.ReactElement<ITodayWorkProps> {
-    
+
 
     return (
       <section className={styles.todayWork}>
-       
+
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={this.state.value} onChange={this.handleChange.bind(this)} aria-label="basic tabs example">
 
@@ -142,40 +151,40 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
               <span className={styles.loading}><CircularProgress /></span>
               :
               this.state.tasks && this.state.tasks.length > 0 ?
-              <Carousel animation="slide" autoPlay={false}>
-                {
-                  
-                  this.state.tasks && this.state.tasks.map((task: any) => {
-                    return <TaskCard key={task.bucketId} tarea={task}/>
-                  })
-                 
-                }
-              </Carousel>
- :
-                  <p>No hay tareas</p>
+                <Carousel animation="slide" autoPlay={false}>
+                  {
+
+                    this.state.tasks && this.state.tasks.map((task: any) => {
+                      return <TaskCard key={task.bucketId} tarea={task} />
+                    })
+
+                  }
+                </Carousel>
+                :
+                <p>No hay tareas</p>
           }
         </TabPanel>
 
         <TabPanel value={this.state.value} index={1}>
-              
+
           {
-                this.state.events && this.state.events.length > 0 ?
-            <Carousel animation="slide" autoPlay={false}>
-          
+            this.state.events && this.state.events.length > 0 ?
+              <Carousel animation="slide" autoPlay={false}>
+
                 {this.state.events && this.state.events.map((event: any) => {
                   return <EventCard key={event.id} evento={event} />
                 })}
-                
-              
-            </Carousel>
-            :
-                <p>No hay eventos</p>
+
+
+              </Carousel>
+              :
+              <p>No hay eventos</p>
           }
-          
+
 
         </TabPanel>
         <TabPanel value={this.state.value} index={2}>
-        
+
           {
 
             this.state.filesPaged && this.state.filesPaged.map((file: any) => {
@@ -183,12 +192,12 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
             })
           }
           {
-             this.state.filesPaged &&  this.state.filesPaged.length > 0 ?
-            <Button variant="contained" onClick={this.verMas.bind(this)}>Ver más</Button>
-            :
-            <p>No hay documentos en este momento</p>
+            this.state.filesPaged && this.state.filesPaged.length > 0 ?
+              <Button variant="contained" onClick={this.verMas.bind(this)}>Ver más</Button>
+              :
+              <p>No hay documentos en este momento</p>
           }
-          
+
         </TabPanel>
       </section>
     );

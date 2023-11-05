@@ -3,6 +3,7 @@
 import * as React from 'react';
 
 import Card from '@mui/material/Card';
+import { Tasks } from '@microsoft/mgt-react/dist/es6/spfx'
 
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -13,6 +14,8 @@ import styles from '../TodayWork.module.scss';
 
 export default function TaskCard(props: { tarea: any; }) {
     return (
+        <>
+        <Tasks/>
         <Card sx={{ minWidth: 275, minHeight: 275 }}>
             <CardContent>
                 <Typography sx={{ fontWeight: 'bold', fontSize: '16px', mt: 1.5, mb: 2.0 }} component="div">
@@ -56,6 +59,6 @@ export default function TaskCard(props: { tarea: any; }) {
 
             </CardContent>
 
-        </Card>
+        </Card></>
     );
 }
