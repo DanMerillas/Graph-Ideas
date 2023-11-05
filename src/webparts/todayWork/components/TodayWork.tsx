@@ -86,9 +86,7 @@ export default class TodayWork extends React.Component<ITodayWorkProps, TodayWor
   }
 
   private ObtenerEventos(graph: any, today: Date) {
-    graph.me().then((me: any) => {
-      console.log(me)
-    })
+    
     graph.me.calendarView(today.toLocaleDateString(this.locale), new Date(today.setDate(today.getDate() + 1)).toLocaleDateString(this.locale))().then((events: any) => {
       
       this.setState({
